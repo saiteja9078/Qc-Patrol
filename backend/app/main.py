@@ -15,7 +15,12 @@ app = FastAPI(
 )
 
 _cors_origins = [settings.FRONTEND_ORIGIN]
-# In development, always allow both vite ports to avoid surprises
+
+# Support comma-separated FRONTEND_ORIGINS for multiple Vercel URLs
+if settings.FRONTEND_ORIGINS:
+    _cors_origins += [o.strip() for o in settings.FRONTEND_ORIGINS.split(",") if o.strip()]
+
+# In development, always allow local Vite ports
 if settings.APP_ENV == "development":
     _cors_origins += [
         "http://localhost:5173",
@@ -25,7 +30,7 @@ if settings.APP_ENV == "development":
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=list(set(_cors_origins)),  # deduplicate
+    allow_origins=list(set(_cors_origins)),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

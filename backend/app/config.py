@@ -16,7 +16,10 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = ""
     EMAIL_FROM_NAME: str = "QC Patrol System"
 
+    # Single origin (legacy). Use FRONTEND_ORIGINS for multiple (comma-separated).
     FRONTEND_ORIGIN: str = "http://localhost:5173"
+    # e.g. "https://qc-patrol.vercel.app,https://qc-patrol-xyz.vercel.app"
+    FRONTEND_ORIGINS: str = ""
     APP_ENV: str = "development"
 
     class Config:
