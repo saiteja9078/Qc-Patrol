@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 9pt;
+    color: #000;
+    padding: 12mm 10mm;
+  }
+
+  /* ---- Header ---- */
+  .page-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #000;
+    padding: 4px 8px;
+    margin-bottom: 0;
+    background: #f0f0f0;
+  }
+  .page-title h1 {
+    font-size: 13pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+  .page-title .form-id {
+    font-size: 9pt;
+    font-weight: 700;
+  }
+
+  /* ---- Meta info bar ---- */
+  .meta-bar {
+    display: flex;
+    border: 1px solid #000;
+    border-top: none;
+  }
+  .meta-cell {
+    flex: 1;
+    padding: 3px 6px;
+    border-right: 1px solid #000;
+  }
+  .meta-cell:last-child { border-right: none; }
+  .meta-cell .label { font-size: 7pt; color: #555; }
+  .meta-cell .value { font-size: 9pt; font-weight: 700; }
+
+  /* ---- Stamps row ---- */
+  .stamps-bar {
+    display: flex;
+    border: 1px solid #000;
+    border-top: none;
+  }
+  .stamp-cell {
+    flex: 1;
+    padding: 4px 8px;
+    border-right: 1px solid #000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stamp-cell:last-child { border-right: none; }
+  .stamp-box {
+    display: inline-block;
+    border: 1px solid #000;
+    min-width: 60px;
+    height: 22px;
+    padding: 2px 6px;
+    font-size: 10pt;
+    text-align: center;
+  }
+
+  /* ---- Check legend ---- */
+  .legend {
+    border: 1px solid #000;
+    border-top: none;
+    padding: 4px 8px;
+    font-size: 7.5pt;
+    line-height: 1.5;
+    background: #fafafa;
+  }
+  .legend strong { font-size: 8pt; }
+
+  /* ---- Main table ---- */
+  .main-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0;
+    border: 1px solid #000;
+    border-top: none;
+  }
+  .main-table th, .main-table td {
+    border: 1px solid #000;
+    padding: 2px 3px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 8pt;
+  }
+  .main-table th {
+    background: #e8e8e8;
+    font-weight: 700;
+    font-size: 7.5pt;
+  }
+  .col-no   { width: 5%; }
+  .col-name { width: 22%; text-align: left !important; }
+  .col-check{ width: 13%; }
+  .col-other{ width: 20%; }
+
+  .check-line { display: block; line-height: 1.6; text-align: left; padding-left: 4px; }
+  .check-ok   { color: #16a34a; font-weight: 700; }
+  .check-imp  { color: #d97706; font-weight: 700; }
+  .check-empty{ color: #aaa; }
+
+  .row-empty td { background: #fafafa; }
+
+  /* ---- Footer ---- */
+  .footer {
+    margin-top: 4px;
+    border: 1px solid #000;
+    border-top: none;
+    padding: 5px 8px;
+  }
+  .footer-notes {
+    margin-top: 4px;
+    font-size: 7pt;
+    color: #555;
+    line-height: 1.6;
+  }
+  .special-notes-row {
+    margin-bottom: 4px;
+    font-size: 8.5pt;
+  }
+</style>
+</head>
+<body>
+
+<!-- ======= HEADER ======= -->
+<div class="page-title">
+  <h1>ＱＣパトロール記録（組立工程）</h1>
+  <span class="form-id">{{ record.form_id }}</span>
+</div>
+
+<div class="meta-bar">
+  <div class="meta-cell">
+    <span class="label">実施日</span><br>
+    <span class="value">
+      {{ record.patrol_date.strftime('%Y年%m月%d日') if record.patrol_date else '___年___月___日' }}
+    </span>
+  </div>
+  <div class="meta-cell">
+    <span class="label">時間</span><br>
+    <span class="value">
+      {{ record.time_start.strftime('%H:%M') if record.time_start else '___:___' }}
+      ～
+      {{ record.time_end.strftime('%H:%M') if record.time_end else '___:___' }}
+    </span>
+  </div>
+  <div class="meta-cell">
+    <span class="label">天気</span><br>
+    <span class="value">{{ record.weather or '---' }}</span>
+  </div>
+  <div class="meta-cell">
+    <span class="label">温度</span><br>
+    <span class="value">{{ record.temperature_c if record.temperature_c is not none else '---' }}℃</span>
+  </div>
+  <div class="meta-cell">
+    <span class="label">湿度</span><br>
+    <span class="value">{{ record.humidity_pct if record.humidity_pct is not none else '---' }}％</span>
+  </div>
+</div>
+
+<div class="stamps-bar">
+  <div class="stamp-cell">
+    <strong>確認印：</strong>
+    <span class="stamp-box">{{ record.confirmed_by or '' }}</span>
+  </div>
+  <div class="stamp-cell">
+    <strong>検査印：</strong>
+    <span class="stamp-box">{{ record.inspected_by or '' }}</span>
+  </div>
+</div>
+
+<!-- ======= CHECK LEGEND ======= -->
+<div class="legend">
+  <strong>【チェック内容】</strong><br>
+  ①生産している製品に異常が発生していないか。&nbsp;&nbsp;
+  ②作業服が汚れていないか、毛髪がはみでていないか。&nbsp;&nbsp;
+  ③作業机や組み立て設備に不要物が置かれていないか、異物混入の恐れはないか、整理整頓の確認<br>
+  ④作業指導書が開示してあり、作業者は作業指導書通りに作業しているか。&nbsp;&nbsp;
+  ⑤その他改善すべき点があった場合は記載する
+</div>
+
+<!-- ======= MAIN TABLE ======= -->
+<table class="main-table">
+  <thead>
+    <tr>
+      <th class="col-no">No.</th>
+      <th class="col-name" style="text-align:left; padding-left:6px;">品名</th>
+      <th class="col-check">①製品異常</th>
+      <th class="col-check">②服装及び汚れ</th>
+      <th class="col-check">③周辺の５Ｓ</th>
+      <th class="col-check">④作業手順</th>
+      <th class="col-other">⑤その他</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in record.rows %}
+    {% set is_empty = not row.product_name and row.check1_ok is none and row.check2_ok is none %}
+    <tr {% if is_empty %}class="row-empty"{% endif %}>
+      <td>{{ row.row_order }}</td>
+      <td style="text-align:left; padding-left:5px;">{{ row.product_name or '' }}</td>
+
+      <!-- ① 製品異常 -->
+      <td>
+        {% if row.check1_ok is none %}
+          <span class="check-line check-empty">□ 問題無し</span>
+          <span class="check-line check-empty">□ 改善</span>
+        {% elif row.check1_ok %}
+          <span class="check-line check-ok">☑ 問題無し</span>
+          <span class="check-line check-empty">□ 改善</span>
+        {% else %}
+          <span class="check-line check-empty">□ 問題無し</span>
+          <span class="check-line check-imp">☑ 改善</span>
+        {% endif %}
+      </td>
+
+      <!-- ② 服装及び汚れ -->
+      <td>
+        {% if row.check2_ok is none %}
+          <span class="check-line check-empty">□ 問題無し</span>
+          <span class="check-line check-empty">□ 改善</span>
+        {% elif row.check2_ok %}
+          <span class="check-line check-ok">☑ 問題無し</span>
+          <span class="check-line check-empty">□ 改善</span>
+        {% else %}
+          <span class="check-line check-empty">□ 問題無し</span>
+          <span class="check-line check-imp">☑ 改善</span>
+        {% endif %}
+      </td>
+
+      <!-- ③ 周辺の５Ｓ -->
+      <td>
+        {% if row.check3_ok is none %}
+          <span class="check-line check-empty">□ 問題無し</span>
+          <span class="check-line check-empty">□ 改善</span>
+        {% elif row.check3_ok %}
+          <span class="check-line check-ok">☑ 問題無し</span>
+          <span class="check-line check-empty">□ 改善</span>
+        {% else %}
+          <span class="check-line check-empty">□ 問題無し</span>
+          <span class="check-line check-imp">☑ 改善</span>
+        {% endif %}
+      </td>
+
+      <!-- ④ 作業手順 -->
+      <td>
+        {% if row.check4_ok is none %}
+          <span class="check-line check-empty">□ 問題無し</span>
+          <span class="check-line check-empty">□ 改善</span>
+        {% elif row.check4_ok %}
+          <span class="check-line check-ok">☑ 問題無し</span>
+          <span class="check-line check-empty">□ 改善</span>
+        {% else %}
+          <span class="check-line check-empty">□ 問題無し</span>
+          <span class="check-line check-imp">☑ 改善</span>
+        {% endif %}
+      </td>
+
+      <!-- ⑤ その他 -->
+      <td style="text-align:left; padding-left:4px;">
+        {% if row.check5_needs_improvement %}
+          <span class="check-line check-imp">☑ 改善</span>
+          {% if row.check5_note %}
+          <span class="check-line" style="font-size:7pt; color:#333;">{{ row.check5_note }}</span>
+          {% endif %}
+        {% else %}
+          <span class="check-line check-empty">□ 改善</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- ======= FOOTER ======= -->
+<div class="footer">
+  <div class="special-notes-row">
+    <strong>特記など：</strong>{{ record.special_notes or '' }}
+  </div>
+  <div class="footer-notes">
+    ※各工程毎に項目をレ点チェックする事<br>
+    ※改善の場合は、現場リーダーもしくは製造管理者に報告の上、連絡および提案をする事<br>
+    ※その他に改善が必要な場合は、空白に内容を追記の上、レ点チェックをする事
+  </div>
+</div>
+
+</body>
+</html>
